@@ -1,0 +1,119 @@
+const http = require('http');
+
+const {
+  globalErrorHandler,
+  NotFoundError,
+  PinoLogger,
+} = require('@papdaew/shared');
+const compression = require('compression');
+const cors = require('cors');
+const express = require('express');
+const helmet = require('helmet');
+const hpp = require('hpp');
+
+const Config = require('#gateway/configs/config.js');
+const { healthRoutes } = require('#gateway/routes/health.routes.js');
+
+class GatewayServer {
+  #app;
+  #logger;
+  #config;
+
+  constructor() {
+    this.#app = express();
+    this.#config = new Config();
+    this.#logger = new PinoLogger({
+      name: 'Gateway Server',
+      level: this.#config.LOG_LEVEL,
+    });
+  }
+
+  setup() {
+    this.#setupSecurityMiddleware(this.#app);
+    this.#setupMiddleware(this.#app);
+    this.#setupRoutes(this.#app);
+    this.#setupErrorHandlers(this.#app);
+    return this.#app;
+  }
+
+  start() {
+    this.setup();
+    this.#startServer(this.#app);
+  }
+
+  #setupSecurityMiddleware(app) {
+    app.set('trust proxy', true);
+    app.use(cors());
+    app.use(helmet());
+    app.use(hpp());
+  }
+
+  #setupMiddleware(app) {
+    app.use(compression());
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+  }
+
+  #setupRoutes(app) {
+    app.use('', healthRoutes);
+  }
+
+  #setupErrorHandlers(app) {
+    app.all('*', (req, _res, next) => {
+      const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+      this.#logger.error(`${fullUrl} endpoint does not exist.`);
+      next(
+        new NotFoundError(
+          `Can't find ${req.method}:${req.originalUrl} on this server!`
+        )
+      );
+    });
+
+    app.use(globalErrorHandler);
+  }
+
+  async #startServer(app) {
+    try {
+      this.#startHttpServer(app);
+    } catch (error) {
+      this.#logger.error('Failed to start server', error);
+      process.exit(1);
+    }
+  }
+
+  #startHttpServer(app) {
+    const server = http.createServer(app);
+
+    server.listen(this.#config.PORT, () => {
+      this.#logger.info(
+        `API Gateway service is running on port ${this.#config.PORT}`
+      );
+    });
+
+    process.on('uncaughtException', error => {
+      this.#logger.error('Uncaught Exception:', error);
+      server.close(() => {
+        process.exit(1);
+      });
+    });
+
+    process.on('unhandledRejection', error => {
+      this.#logger.error(
+        'Unhandled Rejection:',
+        `${error.name}: ${error.message}`
+      );
+      server.close(() => {
+        process.exit(1);
+      });
+    });
+
+    process.on('SIGTERM', async () => {
+      this.#logger.info('SIGTERM signal received: closing HTTP server');
+      server.close(() => {
+        this.#logger.info('HTTP server closed');
+      });
+    });
+  }
+}
+
+module.exports = GatewayServer;
