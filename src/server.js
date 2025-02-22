@@ -11,25 +11,33 @@ const express = require('express');
 const helmet = require('helmet');
 const hpp = require('hpp');
 
-const Config = require('#gateway/configs/config.js');
-const { healthRoutes } = require('#gateway/routes/health.routes.js');
+const Config = require('#gateway/config.js');
+const HealthRoutes = require('#gateway/routes/health.route.js');
+const ProxyService = require('#gateway/services/proxy.service.js');
 
 class GatewayServer {
   #app;
   #logger;
   #config;
+  #proxyService;
+  #healthRoutes;
 
   constructor() {
     this.#app = express();
     this.#config = new Config();
+    this.#proxyService = new ProxyService();
+    this.#healthRoutes = new HealthRoutes();
     this.#logger = new PinoLogger({
       name: 'Gateway Server',
       level: this.#config.LOG_LEVEL,
+      serviceVersion: this.#config.SERVICE_VERSION,
+      environment: this.#config.NODE_ENV,
     });
   }
 
   setup() {
     this.#setupSecurityMiddleware(this.#app);
+    this.#proxyService.setup(this.#app);
     this.#setupMiddleware(this.#app);
     this.#setupRoutes(this.#app);
     this.#setupErrorHandlers(this.#app);
@@ -55,7 +63,7 @@ class GatewayServer {
   }
 
   #setupRoutes(app) {
-    app.use('', healthRoutes);
+    app.use('/', this.#healthRoutes.setup());
   }
 
   #setupErrorHandlers(app) {

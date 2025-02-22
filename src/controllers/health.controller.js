@@ -1,7 +1,7 @@
 const { PinoLogger, asyncHandler } = require('@papdaew/shared');
 const { StatusCodes } = require('http-status-codes');
 
-const Config = require('#gateway/configs/config.js');
+const Config = require('#gateway/config.js');
 
 class HealthController {
   #logger;
