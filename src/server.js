@@ -12,7 +12,7 @@ const helmet = require('helmet');
 const hpp = require('hpp');
 
 const Config = require('#gateway/config.js');
-const { healthRoutes } = require('#gateway/routes/health.route.js');
+const HealthRoutes = require('#gateway/routes/health.route.js');
 const ProxyService = require('#gateway/services/proxy.service.js');
 
 class GatewayServer {
@@ -20,10 +20,13 @@ class GatewayServer {
   #logger;
   #config;
   #proxyService;
+  #healthRoutes;
+
   constructor() {
     this.#app = express();
     this.#config = new Config();
     this.#proxyService = new ProxyService();
+    this.#healthRoutes = new HealthRoutes();
     this.#logger = new PinoLogger({
       name: 'Gateway Server',
       level: this.#config.LOG_LEVEL,
@@ -60,7 +63,7 @@ class GatewayServer {
   }
 
   #setupRoutes(app) {
-    app.use('', healthRoutes);
+    app.use('/', this.#healthRoutes.setup());
   }
 
   #setupErrorHandlers(app) {
