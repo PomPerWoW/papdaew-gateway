@@ -2,7 +2,7 @@ const { UnauthorizedError } = require('@papdaew/shared');
 const { PinoLogger } = require('@papdaew/shared');
 const jwt = require('jsonwebtoken');
 
-const Config = require('#gateway/config.js');
+const Config = require('#gateway/configs/config.js');
 
 class AuthMiddleware {
   #config;
@@ -10,11 +10,8 @@ class AuthMiddleware {
 
   constructor() {
     this.#config = new Config();
-    this.#logger = new PinoLogger({
-      name: 'Auth Middleware',
-      level: this.#config.LOG_LEVEL,
-      serviceVersion: this.#config.SERVICE_VERSION,
-      environment: this.#config.NODE_ENV,
+    this.#logger = new PinoLogger().child({
+      service: 'Auth Middleware',
     });
   }
 
@@ -31,6 +28,10 @@ class AuthMiddleware {
       const decoded = jwt.verify(token, this.#config.JWT_SECRET);
 
       req.currentUser = decoded;
+
+      req.headers['x-user-id'] = decoded.id;
+      req.headers['x-user-role'] = decoded.role;
+      req.headers['x-user-email'] = decoded.email;
 
       next();
     } catch (error) {

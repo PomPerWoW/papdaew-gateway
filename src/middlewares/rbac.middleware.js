@@ -1,18 +1,11 @@
 const { ForbiddenError, PinoLogger } = require('@papdaew/shared');
 
-const Config = require('#gateway/config.js');
-
 class RBACMiddleware {
-  #config;
   #logger;
 
   constructor() {
-    this.#config = new Config();
-    this.#logger = new PinoLogger({
-      name: 'RBAC Middleware',
-      level: this.#config.LOG_LEVEL,
-      serviceVersion: this.#config.SERVICE_VERSION,
-      environment: this.#config.NODE_ENV,
+    this.#logger = new PinoLogger().child({
+      service: 'RBAC Middleware',
     });
   }
 

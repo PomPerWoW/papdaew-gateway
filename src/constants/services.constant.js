@@ -1,4 +1,4 @@
-const Config = require('#gateway/config.js');
+const Config = require('#gateway/configs/config.js');
 
 const config = new Config();
 
