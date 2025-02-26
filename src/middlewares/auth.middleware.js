@@ -15,25 +15,20 @@ class AuthMiddleware {
   }
 
   verifyToken = async (req, _res, next) => {
-    try {
-      const token =
-        req.cookies.token || req.headers.authorization?.split(' ')[1];
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
 
-      if (!token) {
-        this.#logger.error('No token provided');
-        throw new UnauthorizedError('No token provided');
-      }
-
-      const decoded = jwt.verify(token, this.#config.JWT_SECRET);
-
-      req.user = decoded;
-      req.headers['x-user-id'] = decoded.id;
-      req.headers['x-user-role'] = decoded.role;
-
-      next();
-    } catch {
-      next(new UnauthorizedError('Invalid token'));
+    if (!token) {
+      this.#logger.error('No token provided');
+      return next(new UnauthorizedError('No token provided'));
     }
+
+    const decoded = jwt.verify(token, this.#config.JWT_SECRET);
+
+    req.user = decoded;
+    req.headers['x-user-id'] = decoded.id;
+    req.headers['x-user-role'] = decoded.role;
+
+    next();
   };
 
   checkAuthenticated = async (req, _res, next) => {
