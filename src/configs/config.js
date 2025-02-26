@@ -8,6 +8,9 @@ class Config {
     this.NODE_ENV = process.env.NODE_ENV || 'development';
     this.LOG_LEVEL = process.env.LOG_LEVEL || 'info';
     this.SERVICE_VERSION = process.env.SERVICE_VERSION || '1.0.0';
+    this.JWT_SECRET = process.env.JWT_SECRET;
+    this.JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
+    this.SESSION_SECRET = process.env.SESSION_SECRET;
     this.AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL;
     this.USERS_SERVICE_URL = process.env.USERS_SERVICE_URL;
   }

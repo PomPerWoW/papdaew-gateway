@@ -1,12 +1,26 @@
-const Config = require('#gateway/config.js');
+const Config = require('#gateway/configs/config.js');
+const AuthMiddleware = require('#gateway/middlewares/auth.middleware.js');
 
 const config = new Config();
 
-const services = [
-  {
-    route: '/api/v1/auth',
-    target: config.AUTH_SERVICE_URL,
-  },
-];
+class ServicesConstant {
+  constructor() {
+    this.authMiddleware = new AuthMiddleware();
+  }
 
-module.exports = services;
+  get services() {
+    return [
+      {
+        route: '/api/v1/auth',
+        target: config.AUTH_SERVICE_URL,
+      },
+      {
+        route: '/api/v1/users',
+        target: config.USERS_SERVICE_URL,
+        middleware: [this.authMiddleware.verifyToken],
+      },
+    ];
+  }
+}
+
+module.exports = ServicesConstant;
