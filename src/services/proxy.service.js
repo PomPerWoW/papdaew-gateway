@@ -1,16 +1,16 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
-const services = require('#gateway/constants/services.constant.js');
+const ServicesConstant = require('#gateway/constants/services.constant.js');
 
 class ProxyService {
   #services;
 
   constructor() {
-    this.#services = services;
+    this.#services = new ServicesConstant();
   }
 
   setup(app) {
-    this.#services.forEach(service => {
+    this.#services.services.forEach(service => {
       const proxyOptions = {
         target: service.target,
         changeOrigin: true,

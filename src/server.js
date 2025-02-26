@@ -6,6 +6,7 @@ const {
   PinoLogger,
 } = require('@papdaew/shared');
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
@@ -26,11 +27,8 @@ class GatewayServer {
   constructor() {
     this.#app = express();
     this.#config = new Config();
-    this.#logger = new PinoLogger({
-      name: 'Gateway Server',
-      level: this.#config.LOG_LEVEL,
-      serviceVersion: this.#config.SERVICE_VERSION,
-      environment: this.#config.NODE_ENV,
+    this.#logger = new PinoLogger().child({
+      service: 'Gateway Server',
     });
     this.#healthRoutes = new HealthRoutes();
     this.#proxyService = new ProxyService();
@@ -53,6 +51,7 @@ class GatewayServer {
   #setupSecurityMiddleware = app => {
     app.set('trust proxy', true);
     app.use(cors());
+    app.use(cookieParser());
     app.use(helmet());
     app.use(hpp());
   };
