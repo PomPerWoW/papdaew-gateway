@@ -25,14 +25,14 @@ class Application {
 
   setupUncaughtException = () => {
     process.once('uncaughtException', error => {
-      this.appLogger.error(`Uncaught Exception: ${error.name}`, error);
+      this.appLogger.error(error, `Uncaught Exception: ${error.name}`);
       process.exit(1);
     });
   };
 
   setupUnhandledRejection = () => {
     process.once('unhandledRejection', error => {
-      this.appLogger.error(`Unhandled Rejection: ${error.name}`, error);
+      this.appLogger.error(error, `Unhandled Rejection: ${error.name}`);
       this.server.close();
       process.exit(1);
     });
@@ -44,7 +44,7 @@ class Application {
         await this.server.close();
         process.exit(0);
       } catch (error) {
-        this.appLogger.error(`Error during shutdown: ${error.name}`, error);
+        this.appLogger.error(error, `Error during shutdown: ${error.name}`);
         process.exit(1);
       }
     };

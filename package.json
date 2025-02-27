@@ -30,7 +30,7 @@
 	},
 	"homepage": "https://github.com/PomPerWoW/papdaew-gateway#readme",
 	"dependencies": {
-		"@papdaew/shared": "^0.2.6",
+		"@papdaew/shared": "^0.2.9",
 		"compression": "^1.8.0",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
