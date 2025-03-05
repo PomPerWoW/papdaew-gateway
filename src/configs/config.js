@@ -13,6 +13,7 @@ class Config {
     this.SESSION_SECRET = process.env.SESSION_SECRET;
     this.AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL;
     this.USERS_SERVICE_URL = process.env.USERS_SERVICE_URL;
+    this.NOTIFICATION_SERVICE_URL = process.env.NOTIFICATION_SERVICE_URL;
   }
 }
 

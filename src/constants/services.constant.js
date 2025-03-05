@@ -19,6 +19,11 @@ class ServicesConstant {
         target: config.USERS_SERVICE_URL,
         middleware: [this.authMiddleware.verifyToken],
       },
+      {
+        route: '/api/v1/notifications',
+        target: config.NOTIFICATION_SERVICE_URL,
+        middleware: [this.authMiddleware.verifyToken],
+      },
     ];
   }
 }

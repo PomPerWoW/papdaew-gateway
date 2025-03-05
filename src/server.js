@@ -15,6 +15,7 @@ const hpp = require('hpp');
 const Config = require('#gateway/configs/config.js');
 const HealthRoutes = require('#gateway/routes/health.route.js');
 const ProxyService = require('#gateway/services/proxy.service.js');
+const SocketService = require('#gateway/services/socket.service.js');
 
 class GatewayServer {
   #app;
@@ -23,6 +24,7 @@ class GatewayServer {
   #config;
   #healthRoutes;
   #proxyService;
+  #socketService;
 
   constructor() {
     this.#app = express();
@@ -32,6 +34,7 @@ class GatewayServer {
     });
     this.#healthRoutes = new HealthRoutes();
     this.#proxyService = new ProxyService();
+    this.#socketService = new SocketService();
   }
 
   setup = () => {
@@ -80,18 +83,23 @@ class GatewayServer {
     app.use(globalErrorHandler);
   };
 
-  #startServer = app => {
+  #startServer = async app => {
     try {
       this.#server = http.createServer(app);
-      this.#server.listen(this.#config.PORT, () => {
-        this.#logger.info(
-          `API Gateway service is running on port ${this.#config.PORT}`
-        );
-      });
+      this.#startHttpServer();
+      this.#socketService.initialize(this.#server);
     } catch (error) {
       this.#logger.error(error, 'Failed to start server');
       process.exit(1);
     }
+  };
+
+  #startHttpServer = () => {
+    this.#server.listen(this.#config.PORT, () => {
+      this.#logger.info(
+        `API Gateway service is running on port ${this.#config.PORT}`
+      );
+    });
   };
 
   close = () =>
