@@ -10,7 +10,7 @@ class RBACMiddleware {
   }
 
   checkRole = role => (req, _res, next) => {
-    if (!req.currentUser.roles.includes(role)) {
+    if (!req.user.role.includes(role)) {
       this.#logger.error(
         'User does not have permission to access this resource'
       );

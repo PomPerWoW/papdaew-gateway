@@ -14,6 +14,9 @@ class Config {
     this.AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL;
     this.USERS_SERVICE_URL = process.env.USERS_SERVICE_URL;
     this.NOTIFICATION_SERVICE_URL = process.env.NOTIFICATION_SERVICE_URL;
+    this.VENDOR_SERVICE_URL = process.env.VENDOR_SERVICE_URL;
+    this.QUEUE_SERVICE_URL = process.env.QUEUE_SERVICE_URL;
+    this.ADMIN_SERVICE_URL = process.env.ADMIN_SERVICE_URL;
   }
 }
 
