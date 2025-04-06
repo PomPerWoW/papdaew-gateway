@@ -17,6 +17,7 @@ class Config {
     this.VENDOR_SERVICE_URL = process.env.VENDOR_SERVICE_URL;
     this.QUEUE_SERVICE_URL = process.env.QUEUE_SERVICE_URL;
     this.ADMIN_SERVICE_URL = process.env.ADMIN_SERVICE_URL;
+    this.LOCATIONS_SERVICE_URL = process.env.LOCATIONS_SERVICE_URL;
   }
 }
 

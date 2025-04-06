@@ -27,9 +27,12 @@ class ServicesConstant {
         middleware: [this.authMiddleware.verifyToken],
       },
       {
+        route: '/api/v1/locations',
+        target: config.LOCATIONS_SERVICE_URL,
+      },
+      {
         route: '/api/v1/vendors',
         target: config.VENDOR_SERVICE_URL,
-        middleware: [this.authMiddleware.verifyToken],
       },
       {
         route: '/api/v1/queues',
